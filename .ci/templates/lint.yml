@@ -1,0 +1,5 @@
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "Java Lint Placeholder"
