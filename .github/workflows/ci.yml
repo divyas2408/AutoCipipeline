@@ -27,7 +27,7 @@ jobs:
 
       - name: Commit generated workflow
         env:
-          GH_TOKEN: ${{ secrets.WORKFLOWUP }}
+          GH_TOKEN: ${{ secrets.GEN }}
         run: |
           git config user.name "divyas2408"
           git config user.email "divyas2408@users.noreply.github.com"
