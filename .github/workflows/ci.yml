@@ -1,21 +1,32 @@
-name: Generate Workflow
+name: Generate GitHub Workflow
 
 on:
   push:
     branches: [main]
-
-
+    
 jobs:
   generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # REQUIRED to push changes
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
         with:
-          python-version: 3.x
-      - name: Install PyYAML
-        run: pip install pyyaml
-      - name: Generate Workflow
+          ref: main
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - run: pip install pyyaml
+
+      - name: Generate workflow
         run: python .ci/generate_workflow.py
 
+      - name: Commit generated workflow
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .github/workflows/generated.yml
+          git commit -m "Auto-generate GitHub Actions workflow" || echo "No changes"
+          git push origin main
