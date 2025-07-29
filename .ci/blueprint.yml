@@ -1,0 +1,11 @@
+project:
+  name: java-sample-app
+  tech_stack: java
+  build_tool: maven
+  deploy_method: docker
+  environments:
+    - dev
+    - prod
+  lint: true
+  test: true
+  security_scan: false
