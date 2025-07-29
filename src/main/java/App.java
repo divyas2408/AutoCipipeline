@@ -4,4 +4,5 @@ public class App {
     }
 }
 
+print()
 
