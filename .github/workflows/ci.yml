@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # REQUIRED to push changes
-      #workflows: write   # 👈 THIS LINE FIXES THE ERROR
+      workflows: write   # 👈 THIS LINE FIXES THE ERROR
       
     steps:
       - uses: actions/checkout@v3
