@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # REQUIRED to push changes
+      #workflows: write   # 👈 THIS LINE FIXES THE ERROR
+      
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,6 +26,8 @@ jobs:
         run: python .ci/generate_workflow.py
 
       - name: Commit generated workflow
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           git config user.name "divyas2408"
           git config user.email "divya24selvam@gmail.com"
