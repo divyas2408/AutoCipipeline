@@ -7,8 +7,8 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  # REQUIRED to push changes
+    #permissions:
+      #contents: write  # REQUIRED to push changes
       #workflows: write   # 👈 THIS LINE FIXES THE ERROR
       
     steps:
