@@ -3,9 +3,7 @@ name: Generate Workflow
 on:
   push:
     branches: [main]
-    paths:
-      - ".ci/**"
-      - ".github/workflows/generate.yml"
+
 
 jobs:
   generate:
