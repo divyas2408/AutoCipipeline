@@ -32,6 +32,6 @@ jobs:
           git config user.email "divyas2408@users.noreply.github.com"
           git add .github/workflows/generated.yml
           git commit -m "Auto-generate GitHub Actions workflow" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+          git push https://x-access-token:${{ secrets.GEN }}@github.com/${{ github.repository }}.git HEAD:main
 
 
