@@ -1,9 +1,0 @@
-  deploy:
-    needs: [test]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v3
-      - name: Docker Build and Push
-        run: |
-          echo "Simulate Docker build and push"
