@@ -1,7 +1,7 @@
 project:
   name: sample-app
   tech_stack: null
-  deploy_method: null
+  deploy_method: docker
   build_tool: maven
   environments:
     - dev
