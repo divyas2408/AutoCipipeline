@@ -26,6 +26,15 @@ jobs:
 
       - run: pip install pyyaml
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # important for git diff to work
+
+      - name: Fetch origin/main for diff
+        run: git fetch origin main
+
+
       - name: Generate workflow
         run: python .ci/generate_workflow.py
 
