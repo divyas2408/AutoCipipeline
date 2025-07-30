@@ -10,50 +10,56 @@ def detect_tech_and_deploy():
         ).splitlines()
     except subprocess.CalledProcessError:
         print("⚠️ Could not get changed files from git.")
-        return None, None
+        return set(), set()
 
-    tech_stack = None
-    deploy_method = None
+    tech_stacks = set()
+    deploy_methods = set()
 
     for file in changed_files:
         file = file.lower()
+
+        # Tech stack detection
         if file.endswith(".py"):
-            tech_stack = tech_stack or "python"
+            tech_stacks.add("python")
         elif file.endswith(".java"):
-            tech_stack = tech_stack or "java"
+            tech_stacks.add("java")
         elif file.endswith(".cpp") or file.endswith(".cxx"):
-            tech_stack = tech_stack or "cpp"
+            tech_stacks.add("cpp")
         elif file.endswith(".js") or "node_modules" in file:
-            tech_stack = tech_stack or "node"
+            tech_stacks.add("node")
 
-        # Deployment methods
+        # Deployment method detection
         if file.endswith(".tf"):
-            deploy_method = deploy_method or "terraform"
+            deploy_methods.add("terraform")
         elif "k8s" in file or "deployment.yaml" in file:
-            deploy_method = deploy_method or "k8s"
-        elif "s3" in file or file.endswith(".cpp"):
-            deploy_method = deploy_method or "s3"
-        elif "dockerfile" in file or "docker" in file or file.endswith(".py") or file.endswith(".java") :
-            deploy_method = deploy_method or "docker"
+            deploy_methods.add("k8s")
+        else:
+            deploy_methods.add("docker")
 
-    return tech_stack, deploy_method
+    print(f"📦 Detected tech_stacks: {tech_stacks}, deploy_methods: {deploy_methods}")
+    return tech_stacks, deploy_methods
 
-def build_workflow(blueprint, mode):
+def build_workflow(tech, deploy):
     parts = []
-    if mode == "terraform":
-        parts.append(Path(".ci/templates/deploy/terraform.yml").read_text())
-    else:
-        tech = blueprint["project"]["tech_stack"]
-        deploy = blueprint["project"]["deploy_method"]
-        if not tech or not deploy:
-            raise ValueError("❌ Missing tech_stack or deploy_method in blueprint.")
-        parts.extend([
-            Path(f".ci/templates/{tech}.yml").read_text(),
-            Path(".ci/templates/test.yml").read_text(),
-            Path(f".ci/templates/deploy/{deploy}.yml").read_text()
-        ])
+    try:
+        parts.append(Path(f".ci/templates/{tech}.yml").read_text())
+    except FileNotFoundError:
+        print(f"⚠️ Template not found for tech: {tech}")
+        return
+
+    # Optional: add common test step
+    test_path = Path(".ci/templates/test.yml")
+    if test_path.exists():
+        parts.append(test_path.read_text())
+
+    try:
+        parts.append(Path(f".ci/templates/deploy/{deploy}.yml").read_text())
+    except FileNotFoundError:
+        print(f"⚠️ Deployment template not found for: {deploy}")
+        return
+
     final = "\n".join(parts)
-    filename = ".github/workflows/generated-terraform.yml" if mode == "terraform" else ".github/workflows/generated.yml"
+    filename = f".github/workflows/generated_{tech}_{deploy}.yml"
     Path(filename).write_text(final)
     print(f"✅ Generated {filename}")
 
@@ -71,22 +77,33 @@ def main():
     tech_stack = blueprint["project"].get("tech_stack")
     deploy_method = blueprint["project"].get("deploy_method")
 
-    if not tech_stack or not deploy_method:
-        auto_tech, auto_deploy = detect_tech_and_deploy()
-        if not tech_stack and auto_tech:
-            blueprint["project"]["tech_stack"] = auto_tech
-        if not deploy_method and auto_deploy:
-            blueprint["project"]["deploy_method"] = auto_deploy
+    if args.type == "terraform":
+        terraform_path = Path(".ci/templates/deploy/terraform.yml")
+        if terraform_path.exists():
+            Path(".github/workflows/generated-terraform.yml").write_text(terraform_path.read_text())
+            print("✅ Generated Terraform-only pipeline.")
+        else:
+            print("❌ Missing .ci/templates/deploy/terraform.yml")
+        return
 
-    # After attempting detection, if still missing — fail early with a friendlier message
-    if not blueprint["project"].get("tech_stack") or not blueprint["project"].get("deploy_method"):
+    # Auto-detect if missing
+    if not tech_stack or not deploy_method:
+        detected_techs, detected_deploys = detect_tech_and_deploy()
+    else:
+        detected_techs = {tech_stack}
+        detected_deploys = {deploy_method}
+
+    # Exit early if still missing
+    if not detected_techs or not detected_deploys:
         print("❌ tech_stack or deploy_method is missing and could not be auto-detected.")
         print("➡️  Please either:")
         print("   • Set them manually in .ci/blueprint.yml")
         print("   • Or ensure recent commits include files related to Python/Java/etc. and Terraform/Docker/S3/etc.")
         exit(1)
 
-    build_workflow(blueprint, args.type)
+    for tech in detected_techs:
+        for deploy in detected_deploys:
+            build_workflow(tech, deploy)
 
 if __name__ == "__main__":
     main()
