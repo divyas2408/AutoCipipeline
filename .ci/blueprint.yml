@@ -1,8 +1,8 @@
 project:
-  name: java-sample-app
-  tech_stack: java
+  name: sample-app
+  tech_stack: null
+  deploy_method: null
   build_tool: maven
-  deploy_method: docker
   environments:
     - dev
     - prod
