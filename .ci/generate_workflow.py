@@ -31,9 +31,9 @@ def detect_tech_and_deploy():
             deploy_method = deploy_method or "terraform"
         elif "k8s" in file or "deployment.yaml" in file:
             deploy_method = deploy_method or "k8s"
-        elif "s3" in file:
+        elif "s3" in file or file.endswith(".cpp"):
             deploy_method = deploy_method or "s3"
-        elif "dockerfile" in file or "docker" in file:
+        elif "dockerfile" in file or "docker" in file or file.endswith(".py") or file.endswith(".java") :
             deploy_method = deploy_method or "docker"
 
     return tech_stack, deploy_method
