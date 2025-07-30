@@ -1,0 +1,36 @@
+name: Terraform Auto-Generate Workflow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.tf'
+      - '.ci/**'
+
+jobs:
+  generate-terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install PyYAML
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install pyyaml
+
+      - name: Generate Terraform workflow
+        run: |
+          python .ci/generate_workflow.py --type terraform
+      
+      - name: Commit generated Terraform workflow
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .github/workflows/generated-terraform.yml
+          git commit -m "Auto-generate Terraform deployment workflow" || echo "No changes"
+          git push https://x-access-token:${{ secrets.GEN }}@github.com/${{ github.repository }}.git HEAD:main
