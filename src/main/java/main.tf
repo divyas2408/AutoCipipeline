@@ -6,7 +6,7 @@ terraform {
     }
   }
 }
-
+#sample
 provider "local" {}
 
 resource "local_file" "example" {
