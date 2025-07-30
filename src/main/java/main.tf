@@ -6,7 +6,7 @@ terraform {
     }
   }
 }
-# This is a single-line comment
+# This is a single-line
 provider "local" {}
 
 resource "local_file" "example" {
