@@ -1,0 +1,11 @@
+# Kubernetes Deployment Template
+- name: Set up kubectl
+  uses: azure/setup-kubectl@v3
+  with:
+    version: 'latest'
+
+- name: Apply Kubernetes manifests
+  run: |
+    kubectl apply -f k8s/
+  env:
+    KUBECONFIG: ${{ secrets.KUBECONFIG }}
