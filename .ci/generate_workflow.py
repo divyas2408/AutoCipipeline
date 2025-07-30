@@ -72,11 +72,19 @@ def main():
     deploy_method = blueprint["project"].get("deploy_method")
 
     if not tech_stack or not deploy_method:
-        auto_tech, auto_deploy = detect_tech_and_deploy()
-        if not tech_stack:
-            blueprint["project"]["tech_stack"] = auto_tech
-        if not deploy_method:
-            blueprint["project"]["deploy_method"] = auto_deploy
+    auto_tech, auto_deploy = detect_tech_and_deploy()
+    if not tech_stack and auto_tech:
+        blueprint["project"]["tech_stack"] = auto_tech
+    if not deploy_method and auto_deploy:
+        blueprint["project"]["deploy_method"] = auto_deploy
+
+    # After attempting detection, if still missing — fail early with a friendlier message
+    if not blueprint["project"].get("tech_stack") or not blueprint["project"].get("deploy_method"):
+        print("❌ tech_stack or deploy_method is missing and could not be auto-detected.")
+        print("➡️  Please either:")
+        print("   • Set them manually in .ci/blueprint.yml")
+        print("   • Or ensure recent commits include files related to Python/Java/etc. and Terraform/Docker/S3/etc.")
+        exit(1)
 
     build_workflow(blueprint, args.type)
 
