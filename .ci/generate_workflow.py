@@ -6,7 +6,7 @@ import subprocess
 def detect_tech_and_deploy():
     try:
         changed_files = subprocess.check_output(
-            ["git", "diff", "--name-only", "HEAD~1"], text=True
+            ["git", "diff", "--name-only", "origin/main...HEAD"], text=True
         ).splitlines()
     except subprocess.CalledProcessError:
         print("⚠️ Could not get changed files from git.")
