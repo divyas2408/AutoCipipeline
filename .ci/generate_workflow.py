@@ -5,7 +5,7 @@ from pathlib import Path
 def build_workflow(blueprint, mode):
     parts = []
     if mode == "terraform":
-        parts.append(Path(".ci/templates/terraform.yml").read_text())
+        parts.append(Path(".ci/templates/deploy/terraform.yml").read_text())
     else:
         tech = blueprint["project"]["tech_stack"]
         deploy = blueprint["project"]["deploy_method"]
