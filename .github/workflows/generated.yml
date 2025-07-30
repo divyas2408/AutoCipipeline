@@ -18,6 +18,13 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Tests
+        run: mvn test
+
   deploy:
     needs: [test]
     runs-on: ubuntu-latest
@@ -27,16 +34,3 @@ jobs:
       - name: Docker Build and Push
         run: |
           echo "Simulate Docker build and push"
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: echo "Java Lint Placeholder"
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Tests
-        run: mvn test
