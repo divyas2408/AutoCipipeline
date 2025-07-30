@@ -6,7 +6,7 @@ import subprocess
 def detect_tech_and_deploy():
     try:
         changed_files = subprocess.check_output(
-            ["git", "diff", "--name-only", "HEAD~1 HEAD"], text=True
+            ["git", "diff", "--name-only", "HEAD~1", "HEAD"], text=True
         ).splitlines()
         print("------------------")
         print(changed_files)
