@@ -3,6 +3,8 @@ name: Generate GitHub Workflow
 on:
   push:
     branches: [main]
+    paths:
+      - '**/*.java'
     
 jobs:
   generate:
