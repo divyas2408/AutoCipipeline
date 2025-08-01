@@ -3,20 +3,6 @@ name: Terraform Deploy
 on:
   workflow_dispatch:
 
-  push:
-    branches:
-      - dev
-      - staging
-      - main
-    tags:
-      - 'v*.*.*'  # semantic version tags like v1.0.0
-  pull_request:
-    branches:
-      - dev
-      - staging
-      - main
-
-
 jobs:
   terraform:
     runs-on: ubuntu-latest
