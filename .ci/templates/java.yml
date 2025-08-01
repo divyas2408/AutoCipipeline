@@ -1,19 +1,22 @@
+# Java Build Template
 name: Java CI/CD
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment:
-      name: manual-approval
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 11
-          distribution: temurin
+          java-version: '11'
+          distribution: 'temurin'
+
       - name: Build with Maven
         run: mvn clean install
+
