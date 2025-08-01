@@ -3,6 +3,48 @@ import yaml
 from pathlib import Path
 import subprocess
 
+def get_current_branch():
+    """Detect the current Git branch."""
+    try:
+        branch = subprocess.check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"], text=True
+        ).strip()
+        return branch
+    except subprocess.CalledProcessError:
+        return None
+
+def get_branching_rules(branch):
+    """
+    Returns the YAML for branch/tag rules.
+    We keep standard rules but you could tailor them if needed.
+    """
+    return """
+  push:
+    branches:
+      - dev
+      - staging
+      - main
+    tags:
+      - 'v*.*.*'  # semantic version tags like v1.0.0
+  pull_request:
+    branches:
+      - dev
+      - staging
+      - main
+"""
+
+def inject_branch_rules(content):
+    """
+    Finds the 'on:\n  workflow_dispatch:' section in the template
+    and adds branch/tag rules right after it.
+    """
+    branch = get_current_branch()
+    rules = get_branching_rules(branch)
+
+    if "on:" in content and "workflow_dispatch:" in content:
+        return content.replace("workflow_dispatch:", f"workflow_dispatch:\n{rules}", 1)
+    return content
+
 def detect_tech_and_deploy():
     try:
         changed_files = subprocess.check_output(
@@ -45,7 +87,9 @@ def detect_tech_and_deploy():
 def build_workflow(tech, deploy):
     parts = []
     try:
-        parts.append(Path(f".ci/templates/{tech}.yml").read_text())
+        tech_content = Path(f".ci/templates/{tech}.yml").read_text()
+        tech_content = inject_branch_rules(tech_content)  # ✅ Add branch/tag rules
+        parts.append(tech_content)
     except FileNotFoundError:
         print(f"⚠️ Template not found for tech: {tech}")
         return
@@ -56,7 +100,8 @@ def build_workflow(tech, deploy):
         parts.append(test_path.read_text())
 
     try:
-        parts.append(Path(f".ci/templates/deploy/{deploy}.yml").read_text())
+        deploy_content = Path(f".ci/templates/deploy/{deploy}.yml").read_text()
+        parts.append(deploy_content)
     except FileNotFoundError:
         print(f"⚠️ Deployment template not found for: {deploy}")
         return
@@ -83,7 +128,9 @@ def main():
     if args.type == "terraform":
         terraform_path = Path(".ci/templates/deploy/terraform.yml")
         if terraform_path.exists():
-            Path(".github/workflows/generated-terraform.yml").write_text(terraform_path.read_text())
+            terraform_content = terraform_path.read_text()
+            terraform_content = inject_branch_rules(terraform_content)  # ✅ Add rules here too
+            Path(".github/workflows/generated-terraform.yml").write_text(terraform_content)
             print("✅ Generated Terraform-only pipeline.")
         else:
             print("❌ Missing .ci/templates/deploy/terraform.yml")
