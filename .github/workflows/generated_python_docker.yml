@@ -4,35 +4,37 @@ name: Python CI/CD
 on:
   workflow_dispatch:
 
-push:
- branches:
-  - main
- paths:
-  - '**/*.java'
-  - '**/*.py'
-  - '**/*.cpp'
-  - '**/*.cxx'
-  - '**/Dockerfile'
-  - '.ci/**'
- tags:
-  - 'v*.*.*'  # semantic version tags like v1.0.0
+  push:
+   branches:
+    - main
+   paths:
+    - '**/*.java'
+    - '**/*.py'
+    - '**/*.cpp'
+    - '**/*.cxx'
+    - '**/Dockerfile'
+    - '.ci/**'
+   tags:
+    - 'v*.*.*'  # semantic version tags like v1.0.0
 
   
 jobs:
    build:
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+     runs-on: ubuntu-latest
+     steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Run Python Build
-      run: |
-        echo "Python project build complete"
+      - name: Run Python Build
+        run: |
+          echo "Python project build complete"
 
   test:
     runs-on: ubuntu-latest
