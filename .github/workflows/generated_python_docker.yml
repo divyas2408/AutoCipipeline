@@ -4,18 +4,18 @@ name: Python CI/CD
 on:
   workflow_dispatch:
 
-     push:
-      branches:
-       - main
-      paths:
-       - '**/*.java'
-       - '**/*.py'
-       - '**/*.cpp'
-       - '**/*.cxx'
-       - '**/Dockerfile'
-       - '.ci/**'
-      tags:
-       - 'v*.*.*'  # semantic version tags like v1.0.0
+push:
+ branches:
+  - main
+ paths:
+  - '**/*.java'
+  - '**/*.py'
+  - '**/*.cpp'
+  - '**/*.cxx'
+  - '**/Dockerfile'
+  - '.ci/**'
+ tags:
+  - 'v*.*.*'  # semantic version tags like v1.0.0
 
   
 jobs:
