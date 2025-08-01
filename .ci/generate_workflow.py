@@ -19,18 +19,18 @@ def get_branching_rules(branch):
     We keep standard rules but you could tailor them if needed.
     """
     return f"""
-     push:
-      branches:
-       - {branch}
-      paths:
-       - '**/*.java'
-       - '**/*.py'
-       - '**/*.cpp'
-       - '**/*.cxx'
-       - '**/Dockerfile'
-       - '.ci/**'
-      tags:
-       - 'v*.*.*'  # semantic version tags like v1.0.0
+push:
+ branches:
+  - {branch}
+ paths:
+  - '**/*.java'
+  - '**/*.py'
+  - '**/*.cpp'
+  - '**/*.cxx'
+  - '**/Dockerfile'
+  - '.ci/**'
+ tags:
+  - 'v*.*.*'  # semantic version tags like v1.0.0
 """
 
 def inject_branch_rules(content):
