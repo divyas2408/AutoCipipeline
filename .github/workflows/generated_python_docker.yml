@@ -7,16 +7,11 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '**/*.java'
-      - '**/*.py'
-      - '**/*.cpp'
-      - '**/*.cxx'
-      - '**/Dockerfile'
-      - '.ci/**'
-    tags:
-      - 'v*.*.*'  # semantic version tags like v1.0.0
 
+   paths:
+    - '**/generated_python_docker.yml'
+   tags:
+    - 'v*.*.*'  # semantic version tags like v1.0.0
 
 jobs:
   build:
