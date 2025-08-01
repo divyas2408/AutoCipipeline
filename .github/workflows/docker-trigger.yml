@@ -11,8 +11,6 @@ on:
       - '**/*.py'
       - '**/*.cpp'
       - '**/*.cxx'
-      - '**/Dockerfile'
-      - '.ci/**'
 
 jobs:
   generate:
