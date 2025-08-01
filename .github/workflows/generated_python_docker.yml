@@ -6,9 +6,7 @@ on:
 
      push:
       branches:
-       - dev
-       - staging
-       - main
+       - {branch}
       paths:
        - '**/*.java'
        - '**/*.py'
