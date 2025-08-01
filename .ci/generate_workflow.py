@@ -24,15 +24,6 @@ def get_branching_rules(branch):
   push:
     branches:
       - {branch}
-    paths:
-      - '**/*.java'
-      - '**/*.py'
-      - '**/*.cpp'
-      - '**/*.cxx'
-      - '**/Dockerfile'
-      - '.ci/**'
-    tags:
-      - 'v*.*.*'  # semantic version tags like v1.0.0
 """
 
 
