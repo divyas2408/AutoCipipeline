@@ -6,12 +6,9 @@ on:
    branches:
     - main
    paths:
-    - '**/*.java'
-    - '**/*.py'
-    - '**/*.cpp'
-    - '**/*.cxx'
-    - '**/Dockerfile'
-    - '.ci/**'
+    - '**/generated_java_docker.yml'
+    - '**/generated_python_docker.yml'
+    - '**/generated_cpp_docker.yml'
    tags:
     - 'v*.*.*'  # semantic version tags like v1.0.0
 
