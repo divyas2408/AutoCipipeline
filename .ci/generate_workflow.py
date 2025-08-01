@@ -21,9 +21,7 @@ def get_branching_rules(branch):
     return """
      push:
       branches:
-       - dev
-       - staging
-       - main
+       - {branch}
       paths:
        - '**/*.java'
        - '**/*.py'
