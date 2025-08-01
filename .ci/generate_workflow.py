@@ -93,7 +93,8 @@ def build_workflow(tech, deploy):
     parts = []
     try:
         tech_content = Path(f".ci/templates/{tech}.yml").read_text()
-        tech_content = inject_branch_rules(tech_content)  # ✅ Add branch/tag rules
+        if deploy == "docker":
+            tech_content = inject_branch_rules(tech_content)  # ✅ Add branch/tag rules
         parts.append(tech_content)
     except FileNotFoundError:
         print(f"⚠️ Template not found for tech: {tech}")
