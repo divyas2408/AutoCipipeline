@@ -3,7 +3,6 @@ name: Python CI/CD
 
 on:
   workflow_dispatch:
-
   push:
    branches:
     - main
