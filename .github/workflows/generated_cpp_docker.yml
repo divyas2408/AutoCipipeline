@@ -15,14 +15,16 @@ on:
   
 jobs:
   build:
-  - name: Install build tools
-    run: sudo apt-get update && sudo apt-get install -y build-essential
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
 
-  - name: Compile C++ code
-    run: |
-      mkdir -p build
-      g++ -o build/app *.cpp
-      echo "C++ build complete"
+      - name: Compile C++ code
+        run: |
+          mkdir -p build
+          g++ -o build/app *.cpp
+          echo "C++ build complete"
 
   test:
     runs-on: ubuntu-latest
