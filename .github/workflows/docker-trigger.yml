@@ -2,7 +2,10 @@ name: Generate GitHub Workflow
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
+      - dev
+      - staging
     paths:
       - '**/*.java'
       - '**/*.py'
