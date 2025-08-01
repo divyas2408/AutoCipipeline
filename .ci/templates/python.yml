@@ -3,6 +3,10 @@ name: Python CI/CD
 
 on:
   workflow_dispatch:
+   paths:
+    - '**/generated_python_docker.yml'
+   tags:
+    - 'v*.*.*'  # semantic version tags like v1.0.0
 
 jobs:
   build:
