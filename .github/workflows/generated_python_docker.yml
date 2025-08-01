@@ -9,13 +9,15 @@ on:
       - dev
       - staging
       - main
+    paths:
+      - '**/*.java'
+      - '**/*.py'
+      - '**/*.cpp'
+      - '**/*.cxx'
+      - '**/Dockerfile'
+      - '.ci/**'
     tags:
       - 'v*.*.*'  # semantic version tags like v1.0.0
-  pull_request:
-    branches:
-      - dev
-      - staging
-      - main
 
   
 jobs:
