@@ -3,5 +3,3 @@ public class App {
         System.out.println("Hello from Java CI/CD!");
     }
 }
-//Sample
-
