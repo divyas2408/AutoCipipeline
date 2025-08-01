@@ -2,7 +2,10 @@ name: Terraform Auto-Generate Workflow
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
+      - dev
+      - staging
     paths:
       - '**/*.tf'
       - '.ci/**'
