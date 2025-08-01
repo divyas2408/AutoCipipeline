@@ -24,13 +24,15 @@ def get_branching_rules(branch):
       - dev
       - staging
       - main
+    paths:
+      - '**/*.java'
+      - '**/*.py'
+      - '**/*.cpp'
+      - '**/*.cxx'
+      - '**/Dockerfile'
+      - '.ci/**'
     tags:
       - 'v*.*.*'  # semantic version tags like v1.0.0
-  pull_request:
-    branches:
-      - dev
-      - staging
-      - main
 """
 
 def inject_branch_rules(content):
