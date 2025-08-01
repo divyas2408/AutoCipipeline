@@ -3,6 +3,7 @@ import yaml
 from pathlib import Path
 import subprocess
 
+
 def get_current_branch():
     """Detect the current Git branch."""
     try:
@@ -13,39 +14,43 @@ def get_current_branch():
     except subprocess.CalledProcessError:
         return None
 
+
 def get_branching_rules(branch):
     """
-    Returns the YAML for branch/tag rules.
-    We keep standard rules but you could tailor them if needed.
+    Returns the YAML for branch/tag rules for the current branch only.
+    Properly indented for GitHub Actions syntax.
     """
     return f"""
   push:
-   branches:
-    - {branch}
-   paths:
-    - '**/*.java'
-    - '**/*.py'
-    - '**/*.cpp'
-    - '**/*.cxx'
-    - '**/Dockerfile'
-    - '.ci/**'
-   tags:
-    - 'v*.*.*'  # semantic version tags like v1.0.0
+    branches:
+      - {branch}
+    paths:
+      - '**/*.java'
+      - '**/*.py'
+      - '**/*.cpp'
+      - '**/*.cxx'
+      - '**/Dockerfile'
+      - '.ci/**'
+    tags:
+      - 'v*.*.*'  # semantic version tags like v1.0.0
 """
+
 
 def inject_branch_rules(content):
     """
-    Finds the 'on:\n  workflow_dispatch:' section in the template
-    and adds branch/tag rules right after it.
+    Finds the 'workflow_dispatch:' section in the template
+    and adds branch/tag rules right after it, preserving indentation.
     """
-    branch = get_current_branch()
+    branch = get_current_branch() or "main"
     rules = get_branching_rules(branch)
 
     if "on:" in content and "workflow_dispatch:" in content:
-        return content.replace("workflow_dispatch:", f"workflow_dispatch:{rules}", 1)
+        return content.replace("workflow_dispatch:", f"workflow_dispatch:\n{rules}", 1)
     return content
 
+
 def detect_tech_and_deploy():
+    """Detect tech stack and deployment method based on changed files."""
     try:
         changed_files = subprocess.check_output(
             ["git", "diff", "--name-only", "HEAD~1", "HEAD"], text=True
@@ -73,13 +78,13 @@ def detect_tech_and_deploy():
         elif file.endswith(".js") or "node_modules" in file:
             tech_stacks.add("node")
 
-        # Deployment method detection (exclusive selection)
+        # Deployment method detection
         if file.endswith(".tf"):
             deploy_methods.add("terraform")
         elif "k8s" in file or "deployment.yaml" in file:
             deploy_methods.add("k8s")
 
-    # If no terraform/k8s detected but other files changed, assume docker
+    # Default to docker if other deploy methods not found
     if not deploy_methods and tech_stacks:
         deploy_methods.add("docker")
 
@@ -88,17 +93,22 @@ def detect_tech_and_deploy():
 
 
 def build_workflow(tech, deploy):
+    """Builds the final workflow YAML from templates."""
     parts = []
+
     try:
         tech_content = Path(f".ci/templates/{tech}.yml").read_text()
-        if deploy == "docker":
-            tech_content = inject_branch_rules(tech_content)  # ✅ Add branch/tag rules
+
+        # Inject branch rules only if NOT Terraform
+        if deploy != "terraform":
+            tech_content = inject_branch_rules(tech_content)
+
         parts.append(tech_content)
     except FileNotFoundError:
         print(f"⚠️ Template not found for tech: {tech}")
         return
 
-    # Optional: add common test step
+    # Append test step if available
     test_path = Path(".ci/templates/test.yml")
     if test_path.exists():
         parts.append(test_path.read_text())
@@ -115,6 +125,7 @@ def build_workflow(tech, deploy):
     Path(filename).write_text(final)
     print(f"✅ Generated {filename}")
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--type', default=None)
@@ -129,11 +140,12 @@ def main():
     tech_stack = blueprint["project"].get("tech_stack")
     deploy_method = blueprint["project"].get("deploy_method")
 
+    # Terraform-only run
     if args.type == "terraform":
         terraform_path = Path(".ci/templates/deploy/terraform.yml")
         if terraform_path.exists():
             terraform_content = terraform_path.read_text()
-            terraform_content = inject_branch_rules(terraform_content)  # ✅ Add rules here too
+            # No branch rules for Terraform
             Path(".github/workflows/generated-terraform.yml").write_text(terraform_content)
             print("✅ Generated Terraform-only pipeline.")
         else:
@@ -147,17 +159,19 @@ def main():
         detected_techs = {tech_stack}
         detected_deploys = {deploy_method}
 
-    # Exit early if still missing
+    # If still missing, exit
     if not detected_techs or not detected_deploys:
         print("❌ tech_stack or deploy_method is missing and could not be auto-detected.")
-        print("➡️  Please either:")
+        print("➡️ Please either:")
         print("   • Set them manually in .ci/blueprint.yml")
         print("   • Or ensure recent commits include files related to Python/Java/etc. and Terraform/Docker/S3/etc.")
         exit(1)
 
+    # Build workflows
     for tech in detected_techs:
         for deploy in detected_deploys:
             build_workflow(tech, deploy)
+
 
 if __name__ == "__main__":
     main()
