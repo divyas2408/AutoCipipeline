@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-
+    
    paths:
     - '**/generated_python_docker.yml'
    tags:
