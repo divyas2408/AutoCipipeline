@@ -19,20 +19,20 @@ def get_branching_rules(branch):
     We keep standard rules but you could tailor them if needed.
     """
     return """
-  push:
-    branches:
-      - dev
-      - staging
-      - main
-    paths:
-      - '**/*.java'
-      - '**/*.py'
-      - '**/*.cpp'
-      - '**/*.cxx'
-      - '**/Dockerfile'
-      - '.ci/**'
-    tags:
-      - 'v*.*.*'  # semantic version tags like v1.0.0
+     push:
+      branches:
+       - dev
+       - staging
+       - main
+      paths:
+       - '**/*.java'
+       - '**/*.py'
+       - '**/*.cpp'
+       - '**/*.cxx'
+       - '**/Dockerfile'
+       - '.ci/**'
+      tags:
+       - 'v*.*.*'  # semantic version tags like v1.0.0
 """
 
 def inject_branch_rules(content):
@@ -75,16 +75,19 @@ def detect_tech_and_deploy():
         elif file.endswith(".js") or "node_modules" in file:
             tech_stacks.add("node")
 
-        # Deployment method detection
+        # Deployment method detection (exclusive selection)
         if file.endswith(".tf"):
             deploy_methods.add("terraform")
         elif "k8s" in file or "deployment.yaml" in file:
             deploy_methods.add("k8s")
-        else:
-            deploy_methods.add("docker")
+
+    # If no terraform/k8s detected but other files changed, assume docker
+    if not deploy_methods and tech_stacks:
+        deploy_methods.add("docker")
 
     print(f"📦 Detected tech_stacks: {tech_stacks}, deploy_methods: {deploy_methods}")
     return tech_stacks, deploy_methods
+
 
 def build_workflow(tech, deploy):
     parts = []
