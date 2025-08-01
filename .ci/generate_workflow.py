@@ -24,7 +24,7 @@ def get_branching_rules(branch):
   push:
     branches:
       - {branch}
-"""
+    """
 
 
 def inject_branch_rules(content):
