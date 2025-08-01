@@ -18,7 +18,7 @@ def get_branching_rules(branch):
     Returns the YAML for branch/tag rules.
     We keep standard rules but you could tailor them if needed.
     """
-    return """
+    return f"""
      push:
       branches:
        - {branch}
