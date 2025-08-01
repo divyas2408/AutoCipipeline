@@ -42,7 +42,7 @@ def inject_branch_rules(content):
     rules = get_branching_rules(branch)
 
     if "on:" in content and "workflow_dispatch:" in content:
-        return content.replace("workflow_dispatch:", f"workflow_dispatch:\n{rules}", 1)
+        return content.replace("workflow_dispatch:", f"workflow_dispatch:{rules}", 1)
     return content
 
 def detect_tech_and_deploy():
